@@ -30,7 +30,7 @@ French to English.
 ... to varying degrees of success.
 
 This is made possible by the simple but powerful idea of the `sequence
-to sequence network <http://arxiv.org/abs/1409.3215>`__, in which two
+to sequence network <https://arxiv.org/abs/1409.3215>`__, in which two
 recurrent neural networks work together to transform one sequence to
 another. An encoder network condenses an input sequence into a vector,
 and a decoder network unfolds that vector into a new sequence.
@@ -47,7 +47,7 @@ learn to focus over a specific range of the input sequence.
 I assume you have at least installed PyTorch, know Python, and
 understand Tensors:
 
--  http://pytorch.org/ For installation instructions
+-  https://pytorch.org/ For installation instructions
 -  :doc:`/beginner/deep_learning_60min_blitz` to get started with PyTorch in general
 -  :doc:`/beginner/pytorch_with_examples` for a wide and deep overview
 -  :doc:`/beginner/former_torchies_tutorial` if you are former Lua Torch user
@@ -57,12 +57,12 @@ It would also be useful to know about Sequence to Sequence networks and
 how they work:
 
 -  `Learning Phrase Representations using RNN Encoder-Decoder for
-   Statistical Machine Translation <http://arxiv.org/abs/1406.1078>`__
+   Statistical Machine Translation <https://arxiv.org/abs/1406.1078>`__
 -  `Sequence to Sequence Learning with Neural
-   Networks <http://arxiv.org/abs/1409.3215>`__
+   Networks <https://arxiv.org/abs/1409.3215>`__
 -  `Neural Machine Translation by Jointly Learning to Align and
    Translate <https://arxiv.org/abs/1409.0473>`__
--  `A Neural Conversational Model <http://arxiv.org/abs/1506.05869>`__
+-  `A Neural Conversational Model <https://arxiv.org/abs/1506.05869>`__
 
 You will also find the previous tutorials on
 :doc:`/intermediate/char_rnn_classification_tutorial`
@@ -73,12 +73,12 @@ models, respectively.
 And for more, read the papers that introduced these topics:
 
 -  `Learning Phrase Representations using RNN Encoder-Decoder for
-   Statistical Machine Translation <http://arxiv.org/abs/1406.1078>`__
+   Statistical Machine Translation <https://arxiv.org/abs/1406.1078>`__
 -  `Sequence to Sequence Learning with Neural
-   Networks <http://arxiv.org/abs/1409.3215>`__
+   Networks <https://arxiv.org/abs/1409.3215>`__
 -  `Neural Machine Translation by Jointly Learning to Align and
    Translate <https://arxiv.org/abs/1409.0473>`__
--  `A Neural Conversational Model <http://arxiv.org/abs/1506.05869>`__
+-  `A Neural Conversational Model <https://arxiv.org/abs/1506.05869>`__
 
 
 **Requirements**
@@ -96,7 +96,7 @@ from torch import optim
 import torch.nn.functional as F
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
+
 ######################################################################
 # Loading data files
 # ==================
@@ -105,11 +105,11 @@ print(device)
 # French translation pairs.
 #
 # `This question on Open Data Stack
-# Exchange <http://opendata.stackexchange.com/questions/3888/dataset-of-sentences-translated-into-many-languages>`__
-# pointed me to the open translation site http://tatoeba.org/ which has
-# downloads available at http://tatoeba.org/eng/downloads - and better
+# Exchange <https://opendata.stackexchange.com/questions/3888/dataset-of-sentences-translated-into-many-languages>`__
+# pointed me to the open translation site https://tatoeba.org/ which has
+# downloads available at https://tatoeba.org/eng/downloads - and better
 # yet, someone did the extra work of splitting language pairs into
-# individual text files here: http://www.manythings.org/anki/
+# individual text files here: https://www.manythings.org/anki/
 #
 # The English to French pairs are too big to include in the repo, so
 # download to ``data/eng-fra.txt`` before continuing. The file is a tab
@@ -180,7 +180,7 @@ class Lang:
 #
 
 # Turn a Unicode string to plain ASCII, thanks to
-# http://stackoverflow.com/a/518232/2809427
+# https://stackoverflow.com/a/518232/2809427
 def unicodeToAscii(s):
     return ''.join(
         c for c in unicodedata.normalize('NFD', s)
@@ -193,7 +193,7 @@ def unicodeToAscii(s):
 def normalizeString(s):
     s = unicodeToAscii(s.lower().strip())
     s = re.sub(r"([.!?])", r" \1", s)
-    # s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
+    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
     return s
 
 
@@ -240,7 +240,7 @@ MAX_LENGTH = 10
 eng_prefixes = (
     "i am ", "i m ",
     "he is", "he s ",
-    "she is", "she s",
+    "she is", "she s ",
     "you are", "you re ",
     "we are", "we re ",
     "they are", "they re "
@@ -249,8 +249,8 @@ eng_prefixes = (
 
 def filterPair(p):
     return len(p[0].split(' ')) < MAX_LENGTH and \
-        len(p[1].split(' ')) < MAX_LENGTH #and \
-        # p[1].startswith(eng_prefixes)
+        len(p[1].split(' ')) < MAX_LENGTH and \
+        p[1].startswith(eng_prefixes)
 
 
 def filterPairs(pairs):
@@ -280,8 +280,7 @@ def prepareData(lang1, lang2, reverse=False):
     return input_lang, output_lang, pairs
 
 
-# input_lang, output_lang, pairs = prepareData('eng', 'fra', True)
-input_lang, output_lang, pairs = prepareData('ch', 'ch', True)
+input_lang, output_lang, pairs = prepareData('eng', 'fra', True)
 print(random.choice(pairs))
 
 
@@ -292,7 +291,7 @@ print(random.choice(pairs))
 # A Recurrent Neural Network, or RNN, is a network that operates on a
 # sequence and uses its own output as input for subsequent steps.
 #
-# A `Sequence to Sequence network <http://arxiv.org/abs/1409.3215>`__, or
+# A `Sequence to Sequence network <https://arxiv.org/abs/1409.3215>`__, or
 # seq2seq network, or `Encoder Decoder
 # network <https://arxiv.org/pdf/1406.1078v3.pdf>`__, is a model
 # consisting of two RNNs called the encoder and decoder. The encoder reads
@@ -653,8 +652,6 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             print_loss_total = 0
             print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
                                          iter, iter / n_iters * 100, print_loss_avg))
-            if print_loss_avg < 0.01:
-                break
 
         if iter % plot_every == 0:
             plot_loss_avg = plot_loss_total / plot_every
@@ -773,7 +770,7 @@ hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
 attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 
-trainIters(encoder1, attn_decoder1, 75000, print_every=1000)
+trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
 
 ######################################################################
 #
